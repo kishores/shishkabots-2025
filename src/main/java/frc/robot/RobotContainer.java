@@ -19,6 +19,8 @@ import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.subsystems.LimelightSubsystem;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
 
 public class RobotContainer {
   // The robot's subsystems
@@ -92,6 +94,28 @@ public class RobotContainer {
                 () -> getRotationInput() * 0.25
             )
         );
+
+    // Limelight Controls
+    new JoystickButton(ps4Controller, PS4Controller.Button.kSquare.value)
+        .onTrue(Commands.runOnce(() -> limelightSubsystem.setCameraMode(LimelightSubsystem.CAMERA_MODE_VISION)))
+        .onFalse(Commands.runOnce(() -> limelightSubsystem.setCameraMode(LimelightSubsystem.CAMERA_MODE_DRIVER)));
+
+    new JoystickButton(ps4Controller, PS4Controller.Button.kTriangle.value)
+        .onTrue(Commands.runOnce(() -> limelightSubsystem.setLEDMode(LimelightSubsystem.LED_MODE_FORCE_ON)))
+        .onFalse(Commands.runOnce(() -> limelightSubsystem.setLEDMode(LimelightSubsystem.LED_MODE_FORCE_OFF)));
+
+    new JoystickButton(ps4Controller, PS4Controller.Button.kCross.value)
+        .onTrue(Commands.runOnce(() -> limelightSubsystem.takeSnapshot(1)))
+        .onFalse(Commands.runOnce(() -> limelightSubsystem.takeSnapshot(0)));
+
+    // Stream mode cycling
+    new JoystickButton(ps4Controller, PS4Controller.Button.kOptions.value)
+        .onTrue(Commands.runOnce(() -> {
+            int currentMode = (int) SmartDashboard.getNumber("Limelight/Current Stream Mode", 0);
+            int newMode = (currentMode + 1) % 3; // Cycle through 0, 1, 2
+            limelightSubsystem.setStreamMode(newMode);
+            SmartDashboard.putNumber("Limelight/Current Stream Mode", newMode);
+        }));
   }
 
   private void configureDefaultCommands() {
