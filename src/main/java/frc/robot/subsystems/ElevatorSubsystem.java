@@ -154,7 +154,7 @@ public class ElevatorSubsystem extends SubsystemBase {
         }
 
 
-        // SYSID SETUP
+        // SYSID SETUPSS
         SysIdRoutine routine = new SysIdRoutine(new SysIdRoutine.Config(),
          new SysIdRoutine.Mechanism((voltage) -> voltageDrive(voltage), null, this));
         
@@ -166,6 +166,9 @@ public class ElevatorSubsystem extends SubsystemBase {
     }
     public Command sysIdQuasiastic(SysIdRoutine.Direction direction) {
         return routine.quasistatic(direction);
+    }
+    public Command sysIdDynamic(SysIdRoutine.Direction direction) {
+        return routine.dynamic(direction);
     }
     /**
      * Set the target position for the elevator

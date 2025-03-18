@@ -22,6 +22,7 @@ import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.subsystems.LimelightSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 
 public class RobotContainer {
   // The robot's subsystems
@@ -98,9 +99,20 @@ public class RobotContainer {
       new JoystickButton(xboxController, XboxController.Button.kY.value)
           .onTrue(new ElevatorTestCommand(elevatorSubsystem, 3));
       new JoystickButton(xboxController, XboxController.Button.kX.value)
-          .whileTrue(new LimelightDebugCommand(limelightSubsystem));*/
+          .whileTrue(new LimelightDebugCommand(limelightSubsystem));
       new JoystickButton(xboxController, XboxController.Button.kX.value)
-          .onTrue(new PrepareShooterCommand(shooterSubsystem));
+          .onTrue(new PrepareShooterCommand(shooterSubsystem)); */
+
+        // setup keybinds for forward and reverse voltages to run a sysid routine and to log data into the URCL 
+        // (unofficial rev compatible logger) and then follow the steps on the website to see that data in the sysID WPILib tool
+      new JoystickButton(xboxController, XboxController.Button.kX.value)
+          .whileTrue(elevatorSubsystem.sysIdQuasiastic(SysIdRoutine.Direction.kForward));
+      new JoystickButton(xboxController, XboxController.Button.kA.value)
+          .whileTrue(elevatorSubsystem.sysIdQuasiastic(SysIdRoutine.Direction.kReverse));
+      new JoystickButton(xboxController, XboxController.Button.kB.value)
+          .whileTrue(elevatorSubsystem.sysIdDynamic(SysIdRoutine.Direction.kForward));
+      new JoystickButton(xboxController, XboxController.Button.kY.value)
+          .whileTrue(elevatorSubsystem.sysIdDynamic(SysIdRoutine.Direction.kReverse));
 
       // Shooter control - Right Bumper
       new JoystickButton(xboxController, XboxController.Button.kRightBumper.value)
