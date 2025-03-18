@@ -12,8 +12,11 @@ import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import edu.wpi.first.math.system.plant.DCMotor;
+import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.math.filter.LinearFilter;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import edu.wpi.first.wpilibj.Timer;
@@ -81,6 +84,7 @@ public class ElevatorSubsystem extends SubsystemBase {
      * Second level = 44.5 inches
      * Third level = 70 inches
      */
+    private SysIdRoutine routine;
 
     public ElevatorSubsystem(int primaryMotorCanId, int secondaryMotorCanId, int topLimitSwitchId, int bottomLimitSwitchId) {
         // Initialize motors
@@ -148,11 +152,21 @@ public class ElevatorSubsystem extends SubsystemBase {
             primaryElevatorMotorSim = null;
             secondaryElevatorMotorSim = null;
         }
+
+
+        // SYSID SETUP
+        SysIdRoutine routine = new SysIdRoutine(new SysIdRoutine.Config(),
+         new SysIdRoutine.Mechanism((voltage) -> voltageDrive(voltage), null, this));
         
         // Log initialization
         System.out.println("Elevator subsystem initialized");
     }
-    
+    public void voltageDrive(Voltage voltage) {
+        primaryElevatorMotor.setVoltage(voltage);
+    }
+    public Command sysIdQuasiastic(SysIdRoutine.Direction direction) {
+        return routine.quasistatic(direction);
+    }
     /**
      * Set the target position for the elevator
      * @param position Target position in encoder units
