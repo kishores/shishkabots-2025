@@ -61,7 +61,7 @@ public class Constants {
         public static final double BACK_RIGHT_CHASIS_ANGULAR_OFFSET = 0;
 
         // Spark Max CAN Ids
-        public static final int DRIVE_FRONT_LEFT_CAN_ID = 1;
+        public static final int DRIVE_FRONT_LEFT_CAN_ID = 13;
         public static final int DRIVE_REAR_LEFT_CAN_ID = 5;
         public static final int DRIVE_FRONT_RIGHT_CAN_ID = 3;
         public static final int DRIVE_REAR_RIGHT_CAN_ID = 7;
@@ -123,8 +123,8 @@ public class Constants {
         public static final double ELEVATOR_MOTOR_VELOCITY_FEEDFORWARD = 1 / ELEVATOR_MAX_FREE_SPEED_RPS;
 
         // CAN IDs
-        public static final int ELEVATOR_PRIMARY_MOTOR_ID = 11;
-        public static final int ELEVATOR_SECONDARY_MOTOR_ID = 12;
+        public static final int ELEVATOR_PRIMARY_MOTOR_ID = 9;
+        public static final int ELEVATOR_SECONDARY_MOTOR_ID = 10;
         
         // DIO ports for limit switches
         public static final int ELEVATOR_TOP_LIMIT_SWITCH_ID = 0;
@@ -132,7 +132,7 @@ public class Constants {
     }
     public static final class ShooterConstants {
         // CAN IDs
-        public static final int SHOOTER_PRIMARY_MOTOR_ID = 9; // TODO: NOT FINAL
-        public static final int SHOOTER_SECONDARY_MOTOR_ID = 10; // TODO: ALSO NOT FINAL
+        public static final int SHOOTER_PRIMARY_MOTOR_ID = 11; // TODO: NOT FINAL
+        public static final int SHOOTER_SECONDARY_MOTOR_ID = 12; // TODO: ALSO NOT FINAL
     }
 }

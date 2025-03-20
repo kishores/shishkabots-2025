@@ -99,10 +99,8 @@ public class RobotContainer {
       new JoystickButton(xboxController, XboxController.Button.kY.value)
           .onTrue(new ElevatorTestCommand(elevatorSubsystem, 3));
       // Add binding for bottom position (level 0) on D-pad down
-      new POVButton(xboxController, 180) // 180 degrees is down on the D-pad
+      new JoystickButton(xboxController, XboxController.Button.kLeftBumper.value) // 180 degrees is down on the D-pad
           .onTrue(new ElevatorTestCommand(elevatorSubsystem, 0));
-      new JoystickButton(xboxController, XboxController.Button.kX.value)
-          .whileTrue(new LimelightDebugCommand(limelightSubsystem));
       new JoystickButton(xboxController, XboxController.Button.kX.value)
           .onTrue(new PrepareShooterCommand(shooterSubsystem));
 

@@ -50,25 +50,25 @@ public class DriveSubsystem extends SubsystemBase {
         DriveConstants.DRIVE_FRONT_LEFT_CAN_ID, 
         DriveConstants.DRIVE_TURN_FRONT_LEFT_CAN_ID, 
         DriveConstants.FRONT_LEFT_CHASIS_ANGULAR_OFFSET,
-        false);
+        true);
 
     private final SwerveModule m_frontRight = new SwerveModule(
         DriveConstants.DRIVE_FRONT_RIGHT_CAN_ID, 
         DriveConstants.DRIVE_TURN_FRONT_RIGHT_CAN_ID, 
         DriveConstants.FRONT_RIGHT_CHASIS_ANGULAR_OFFSET,
-        true);
+        false);
         
     private final SwerveModule m_backLeft = new SwerveModule(
         DriveConstants.DRIVE_REAR_LEFT_CAN_ID, 
         DriveConstants.DRIVE_TURN_REAR_LEFT_CAN_ID, 
         DriveConstants.BACK_LEFT_CHASIS_ANGULAR_OFFSET,
-        false);
+        true);
 
     private final SwerveModule m_backRight = new SwerveModule(
         DriveConstants.DRIVE_REAR_RIGHT_CAN_ID, 
         DriveConstants.DRIVE_TURN_REAR_RIGHT_CAN_ID, 
         DriveConstants.BACK_RIGHT_CHASIS_ANGULAR_OFFSET,
-        true);
+        false);
 
     
     private final SwerveDriveKinematics kinematics = new SwerveDriveKinematics(
