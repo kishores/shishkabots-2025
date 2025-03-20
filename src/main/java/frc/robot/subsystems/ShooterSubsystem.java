@@ -35,7 +35,7 @@ public class ShooterSubsystem extends SubsystemBase {
     // State management
     private ShooterState currentState = ShooterState.NO_CORAL;
     private final Timer stateTimer = new Timer();
-    private static final double INTAKE_TIMEOUT = 1.2; // seconds to wait for coral to be fully inside
+    private static double INTAKE_TIMEOUT = 1.2; // seconds to wait for coral to be fully inside
 
     // Motor configuration constants
     private static final double SHOOTING_POWER = 0.35; // 10% power for shooting
@@ -59,6 +59,8 @@ public class ShooterSubsystem extends SubsystemBase {
             colorSensor = new ColorSensorV3(I2C.Port.kOnboard);
             hasColorSensor = true;
             System.out.println("Color sensor initialized successfully");
+            // give the intake more time to run if we have a color sensor since it will automatically turn off
+            INTAKE_TIMEOUT = 3.5;
         } catch (Exception e) {
             System.out.println("Color sensor not detected, running without game piece detection");
             hasColorSensor = false;

@@ -1,5 +1,7 @@
 package frc.robot.subsystems;
 
+import java.util.Optional;
+
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -155,11 +157,17 @@ public class LimelightSubsystem extends SubsystemBase {
         if (!isTargetValid()) {
             return null;    
         } 
-        Pose3d tag = aprilTagField.getTagPose(getTargetID()).orElseThrow(() -> new RuntimeException("Apriltag ID not found"));
+        Optional<Pose3d> tagPoseOptional = aprilTagField.getTagPose(getTargetID());
+        if (tagPoseOptional.isEmpty()) {
+            return null;
+        }
+
+        Pose3d tag = tagPoseOptional.get();
+
         double yaw = robotRotation2d.getRadians();
         double heightDiff = tag.getZ() - LimelightConstants.kCameraToRobot.getZ();
-        double distance = heightDiff / Math.tan(getY());
-        double beta = yaw - getX();
+        double distance = heightDiff / Math.tan(Math.toRadians(getY()));
+        double beta = yaw - Math.toRadians(getX());
         double x = Math.cos(beta) * distance;
         double y = Math.sin(beta) * distance;
         Translation2d tagToCamera = new Translation2d(-x, -y);
@@ -168,7 +176,6 @@ public class LimelightSubsystem extends SubsystemBase {
         new Pose2d(tag.toPose2d().getTranslation().plus(tagToCamera), new Rotation2d(yaw));
 
         Translation2d offset = LimelightConstants.kCameraToRobot.toTranslation2d().rotateBy(robotRotation2d);
-        Pose2d pose = new Pose2d(cameraPose.getTranslation().minus(offset), new Rotation2d(yaw));
-        return pose;
+        return new Pose2d(cameraPose.getTranslation().minus(offset), new Rotation2d(yaw));
     }
 }
