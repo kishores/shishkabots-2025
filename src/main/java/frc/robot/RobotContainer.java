@@ -11,8 +11,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import frc.robot.commands.DefaultDriveCommand;
-import frc.robot.commands.LimelightDebugCommand;
-import frc.robot.commands.TestAllCoralPos;
 import frc.robot.commands.ElevatorTestCommand;
 import frc.robot.commands.EmergencyStopCommand;
 import frc.robot.commands.FineTuneShooterIntakeCommand;
@@ -21,9 +19,7 @@ import frc.robot.commands.PrepareShooterCommand;
 import frc.robot.commands.CalibrateElevatorCommand;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.ElevatorSubsystem;
-import frc.robot.subsystems.LimelightSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
-import frc.robot.subsystems.ShooterSubsystem.ShooterState;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj.XboxController;
 
@@ -39,8 +35,9 @@ public class RobotContainer {
     Constants.ShooterConstants.SHOOTER_PRIMARY_MOTOR_ID,
     Constants.ShooterConstants.SHOOTER_SECONDARY_MOTOR_ID);
 
-  private final LimelightSubsystem limelightSubsystem = new LimelightSubsystem();
-  private final DriveSubsystem driveSubsystem = new DriveSubsystem(limelightSubsystem);
+  // Commented out as Limelight is no longer used
+  // private final LimelightSubsystem limelightSubsystem = new LimelightSubsystem();
+  private final DriveSubsystem driveSubsystem = new DriveSubsystem();
 
   // The driver's controllers
   // Primary controller (port 0) is for the main driver
@@ -56,9 +53,12 @@ public class RobotContainer {
   private final SendableChooser<Command> autoChooser;
 
 
+  // Commented out as Limelight is no longer used
+  /*
   public LimelightSubsystem getLimelightSubsystem() {
     return limelightSubsystem;
   }
+  */
   private double applyDeadband(double value) {
     if (Math.abs(value) < DEADBAND) {
       return 0.0;
@@ -216,8 +216,8 @@ public class RobotContainer {
         )
     );
     
-    // Set Limelight debug command as default
-    limelightSubsystem.setDefaultCommand(new LimelightDebugCommand(limelightSubsystem));
+    // Commented out as Limelight is no longer used
+    // limelightSubsystem.setDefaultCommand(new LimelightDebugCommand(limelightSubsystem));
   }
 
   /**

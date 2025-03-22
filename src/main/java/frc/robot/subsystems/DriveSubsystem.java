@@ -1,18 +1,13 @@
 package frc.robot.subsystems;
 
-import java.util.List;
+import java.util.Optional;
 
 import com.ctre.phoenix6.hardware.Pigeon2;
 import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.commands.FollowPathCommand;
-import com.pathplanner.lib.commands.PathfindingCommand;
 import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
-import com.pathplanner.lib.path.GoalEndState;
 import com.pathplanner.lib.path.PathConstraints;
-import com.pathplanner.lib.path.PathPlannerPath;
-import com.pathplanner.lib.path.Waypoint;
 
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -22,23 +17,21 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-import edu.wpi.first.wpilibj.smartdashboard.Field2d;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants;
-import frc.robot.Constants.DriveConstants;
 import edu.wpi.first.util.datalog.DataLog;
 import edu.wpi.first.util.datalog.DoubleLogEntry;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants.DriveConstants;
 import edu.wpi.first.wpilibj.RobotState;
 import frc.robot.util.Logger;
 
 public class DriveSubsystem extends SubsystemBase {
-    // limelight camera to track apriltags
-    private LimelightSubsystem m_LimelightSubsystem;
+    // Commented out limelight camera as it's no longer used
+    // private LimelightSubsystem m_LimelightSubsystem;
     // PoseEstimator for tracking robot pose
     private PoseEstimator m_PoseEstimator;
 
@@ -92,9 +85,8 @@ public class DriveSubsystem extends SubsystemBase {
     private DoubleLogEntry m_speedLog;
     private DoubleLogEntry m_headingLog;
 
-    public DriveSubsystem(LimelightSubsystem limelight) {
-        m_LimelightSubsystem = limelight;
-        m_PoseEstimator = new PoseEstimator(this, m_LimelightSubsystem);
+    public DriveSubsystem() {
+        m_PoseEstimator = new PoseEstimator(this);
         // Reset the gyro
         m_gyro.reset();
 

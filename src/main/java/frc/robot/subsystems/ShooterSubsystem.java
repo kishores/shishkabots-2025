@@ -151,6 +151,7 @@ public class ShooterSubsystem extends SubsystemBase {
         setMotorPower(FINE_TUNE_POWER);
         // Don't change the state - this can be called from multiple states
     }
+    
     public void shootHighestLevelCoral() {
         if (currentState == ShooterState.CORAL_INSIDE) {
             Logger.log("Shooting coral to bottom level");
