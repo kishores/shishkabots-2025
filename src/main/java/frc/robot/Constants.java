@@ -73,7 +73,7 @@ public class Constants {
         
         public static final int PIGEON_CAN_ID = 8;
 
-        public static final double MAX_SPEED_IN_MPS = 4.0; // meters per second
+        public static final double MAX_SPEED_IN_MPS = 3.5; // meters per second
         public static final double MAX_ANGULAR_SPEED_IN_RPS = 2.5 * Math.PI; // radians per second
 
         public static final double MAX_DIRECTION_SLEW_RATE_RPS = 1.3; // radians per second

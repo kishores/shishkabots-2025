@@ -108,9 +108,9 @@ public class RobotContainer {
     driveSubsystem.setDefaultCommand(
         new DefaultDriveCommand(
             driveSubsystem,
-            () -> getForwardInput() * 0.5,  // Forward/backward
-            () -> getStrafeInput() * 0.5,   // Left/right
-            () -> getRotationInput() * 0.5  // Rotation
+            () -> getForwardInput(),  // Forward/backward
+            () -> getStrafeInput(),   // Left/right
+            () -> getRotationInput()  // Rotation
         )
     ); 
       shooterSubsystem.setDefaultCommand(
@@ -197,9 +197,9 @@ public class RobotContainer {
         .whileTrue(
             new DefaultDriveCommand(
                 driveSubsystem,
-                () -> getForwardInput() * 0.25,
-                () -> getStrafeInput() * 0.25,
-                () -> getRotationInput() * 0.25
+                () -> getForwardInput() * 0.325,
+                () -> getStrafeInput() * 0.325,
+                () -> getRotationInput() * 0.325
             )
         );
         
