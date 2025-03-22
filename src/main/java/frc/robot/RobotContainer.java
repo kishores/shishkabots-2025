@@ -139,10 +139,6 @@ public class RobotContainer {
         )
     );
 
-  // rotate 180 degrees method.
-    new JoystickButton(driveController, XboxController.Button.kY.value)
-      .onTrue(driveSubsystem.driveToEndPose(driveSubsystem.getPose().rotateBy(Rotation2d.fromRadians(Math.PI))));
-    
     // Secondary Xbox Controller Bindings (same as primary)
     new JoystickButton(mechanismController, XboxController.Button.kX.value)
         .onTrue(new ElevatorTestCommand(elevatorSubsystem, 0));
