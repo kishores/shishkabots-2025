@@ -11,7 +11,6 @@ import com.revrobotics.ColorSensorV3;
 
 import edu.wpi.first.wpilibj.I2C;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.util.Logger;
 
@@ -303,36 +302,32 @@ public class ShooterSubsystem extends SubsystemBase {
     }
 
     private void updateTelemetry() {
-        // Left motor telemetry
-        SmartDashboard.putNumber("Shooter/Left/Velocity", leftMotor.getEncoder().getVelocity());
-        SmartDashboard.putNumber("Shooter/Left/Current", leftMotor.getOutputCurrent());
-        SmartDashboard.putNumber("Shooter/Left/Voltage", leftMotor.getBusVoltage());
-        SmartDashboard.putNumber("Shooter/Left/Power", leftMotor.get());
+        // Consolidate motor telemetry into Logger.log statements
+        Logger.log("Shooter Left Motor - Velocity: " + leftMotor.getEncoder().getVelocity() + 
+                  ", Current: " + leftMotor.getOutputCurrent() + 
+                  ", Voltage: " + leftMotor.getBusVoltage() + 
+                  ", Power: " + leftMotor.get());
         
-        // Right motor telemetry
-        SmartDashboard.putNumber("Shooter/Right/Velocity", rightMotor.getEncoder().getVelocity());
-        SmartDashboard.putNumber("Shooter/Right/Current", rightMotor.getOutputCurrent());
-        SmartDashboard.putNumber("Shooter/Right/Voltage", rightMotor.getBusVoltage());
-        SmartDashboard.putNumber("Shooter/Right/Power", rightMotor.get());
+        Logger.log("Shooter Right Motor - Velocity: " + rightMotor.getEncoder().getVelocity() + 
+                  ", Current: " + rightMotor.getOutputCurrent() + 
+                  ", Voltage: " + rightMotor.getBusVoltage() + 
+                  ", Power: " + rightMotor.get());
 
         // State telemetry
-        SmartDashboard.putString("Shooter/State", currentState.toString());
-        SmartDashboard.putNumber("Shooter/StateTimer", stateTimer.get());
-        
-        // Add power output telemetry
-        SmartDashboard.putNumber("Shooter/TargetPower", 
-            currentState == ShooterState.SHOOT_CORAL ? SHOOTING_POWER : 
-            currentState == ShooterState.READY_TO_INTAKE ? INTAKE_POWER : 0);
+        Logger.log("Shooter State: " + currentState.toString() + 
+                  ", State Timer: " + stateTimer.get() + 
+                  ", Target Power: " + (currentState == ShooterState.SHOOT_CORAL ? SHOOTING_POWER : 
+                                       currentState == ShooterState.READY_TO_INTAKE ? INTAKE_POWER : 0));
 
         // Color sensor telemetry (only if sensor is present)
         if (hasColorSensor) {
             var color = colorSensor.getColor();
             int proximity = colorSensor.getProximity();
-            SmartDashboard.putNumber("Shooter/Sensor/Red", color.red);
-            SmartDashboard.putNumber("Shooter/Sensor/Green", color.green);
-            SmartDashboard.putNumber("Shooter/Sensor/Blue", color.blue);
-            SmartDashboard.putNumber("Shooter/Sensor/Proximity", proximity);
+            Logger.log("Shooter Color Sensor - R: " + color.red + 
+                      ", G: " + color.green + 
+                      ", B: " + color.blue + 
+                      ", Proximity: " + proximity);
         }
-        SmartDashboard.putBoolean("Shooter/CoralPresent", currentState == ShooterState.CORAL_INSIDE);
+        Logger.log("Coral Present: " + (currentState == ShooterState.CORAL_INSIDE));
     }
 }

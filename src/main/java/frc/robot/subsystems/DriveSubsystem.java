@@ -1,7 +1,5 @@
 package frc.robot.subsystems;
 
-import java.util.Optional;
-
 import com.ctre.phoenix6.hardware.Pigeon2;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.config.PIDConstants;
@@ -21,12 +19,12 @@ import edu.wpi.first.util.datalog.DataLog;
 import edu.wpi.first.util.datalog.DoubleLogEntry;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.DriveConstants;
-import edu.wpi.first.wpilibj.RobotState;
 import frc.robot.util.Logger;
 
 public class DriveSubsystem extends SubsystemBase {
@@ -139,10 +137,8 @@ public class DriveSubsystem extends SubsystemBase {
      * @param rot Angular rate of the robot.
      */
     public void drive(double xSpeed, double ySpeed, double rot) {
-        // Debug input values
-        SmartDashboard.putNumber("Drive/Input/X", xSpeed);
-        SmartDashboard.putNumber("Drive/Input/Y", ySpeed);
-        SmartDashboard.putNumber("Drive/Input/Rot", rot);
+        // Log input values using Logger instead of SmartDashboard to reduce network traffic
+        Logger.log("Drive Input - X: " + xSpeed + ", Y: " + ySpeed + ", Rot: " + rot);
 
         // If all inputs are zero, stop the motors
         if (Math.abs(xSpeed) < 1E-6 && Math.abs(ySpeed) < 1E-6 && Math.abs(rot) < 1E-6) {
@@ -174,10 +170,9 @@ public class DriveSubsystem extends SubsystemBase {
 
         SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, 4.0);
 
-        SmartDashboard.putNumber("Chasis Speeds X", speeds.vxMetersPerSecond);
-        SmartDashboard.putNumber("Chasis Speeds Y", speeds.vyMetersPerSecond);
-        SmartDashboard.putNumber("Chasis Speeds Rotation", speeds.omegaRadiansPerSecond);
-
+        Logger.log("Chassis Speeds - X: " + speeds.vxMetersPerSecond + 
+                  ", Y: " + speeds.vyMetersPerSecond + 
+                  ", Rotation: " + speeds.omegaRadiansPerSecond);
 
         // Log detailed turning motor commands
         Logger.log("Setting module states:");
@@ -241,12 +236,13 @@ public class DriveSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
-        // Only update SmartDashboard every 10 cycles to reduce NT traffic
+        // Only update logging every 50 cycles to reduce processing load and network traffic
         updateCounter++;
         if (updateCounter >= 50) {
             try {
-                // set robot position in the field
+                // set robot position in the field (keep this for field visualization)
                 m_field.setRobotPose(m_PoseEstimator.getPose2d());
+                
                 // log array of all swerve modules to be put into advantagescope simulation
                 double loggingState[] = {
                     m_frontLeft.getSteerAngle(),
@@ -259,6 +255,7 @@ public class DriveSubsystem extends SubsystemBase {
                     m_backRight.getDriveSpeed()
                 };
 
+                // Keep this for visualization tools but remove other SmartDashboard updates
                 SmartDashboard.putNumberArray("SwerveModuleStates", loggingState);
                 
                 // Log detailed turning motor data for each module
@@ -272,13 +269,12 @@ public class DriveSubsystem extends SubsystemBase {
                 Logger.log("Back Right - Angle: " + Math.toDegrees(m_backRight.getSteerAngle()) + 
                           "°, Target: " + Math.toDegrees(m_backRight.getDesiredAngle()) + "°");
                 
-
-                // Add odometry data to SmartDashboard
+                // Convert odometry data to Logger.log instead of SmartDashboard
                 var pose = getPose();
-                SmartDashboard.putNumber("Pose/X", pose.getX());
-                SmartDashboard.putNumber("Pose/Y", pose.getY());
-                SmartDashboard.putNumber("Pose/Rotation", pose.getRotation().getDegrees());
-                SmartDashboard.putNumber("Gyro/Angle", getGyroRotation().getDegrees());
+                Logger.log("Robot Position - X: " + pose.getX() + 
+                          ", Y: " + pose.getY() + 
+                          ", Rotation: " + pose.getRotation().getDegrees() + "°");
+                Logger.log("Gyro Angle: " + getGyroRotation().getDegrees() + "°");
 
                 // Log important values
                 var chassisSpeeds = kinematics.toChassisSpeeds(getModuleStates());
@@ -287,16 +283,16 @@ public class DriveSubsystem extends SubsystemBase {
                     chassisSpeeds.vyMetersPerSecond * chassisSpeeds.vyMetersPerSecond
                 );
 
-                // Log to DataLog (saved to file)
+                // Log to DataLog (saved to file) - keep this as it doesn't affect network traffic
                 m_speedLog.append(speed);
                 m_headingLog.append(getGyroRotation().getDegrees());
 
-                // Log to SmartDashboard (network tables, viewable in Shuffleboard)
-                SmartDashboard.putNumber("Drive/Speed (m/s)", speed);
-                SmartDashboard.putNumber("Drive/Heading (deg)", getGyroRotation().getDegrees());
-                SmartDashboard.putString("Drive/Pose", getPose().toString());
+                // Convert SmartDashboard logging to Logger.log
+                Logger.log("Drive Speed: " + speed + " m/s");
+                Logger.log("Drive Heading: " + getGyroRotation().getDegrees() + "°");
+                Logger.log("Drive Pose: " + getPose().toString());
             } catch (Exception e) {
-                System.err.println("Error updating SmartDashboard: " + e.getMessage());
+                System.err.println("Error updating logs: " + e.getMessage());
             }
             updateCounter = 0;
         }
