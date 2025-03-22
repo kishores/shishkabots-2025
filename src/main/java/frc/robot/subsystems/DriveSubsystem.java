@@ -159,7 +159,14 @@ public class DriveSubsystem extends SubsystemBase {
             // Apply slew rate limiters to smooth out the inputs
             xSpeed = m_xSpeedLimiter.calculate(xSpeed);
             ySpeed = m_ySpeedLimiter.calculate(ySpeed);
-            rot = m_rotLimiter.calculate(rot);
+            
+            // If changing rotation direction, use a higher slew rate or bypass
+            double currentRot = m_rotLimiter.calculate(0); // Get current value without changing it
+            if (currentRot * rot < 0) { // If signs are different (changing direction)
+                rot = rot * 0.8; // Apply directly with slight reduction
+            } else {
+                rot = m_rotLimiter.calculate(rot); // Normal slew rate
+            }
         }
 
         ChassisSpeeds speeds = new ChassisSpeeds(xSpeed, ySpeed, rot);

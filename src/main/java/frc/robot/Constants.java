@@ -78,7 +78,7 @@ public class Constants {
 
         public static final double MAX_DIRECTION_SLEW_RATE_RPS = 1.3; // radians per second
         public static final double MAX_MAGNITUDE_SLEW_RATE = 1.8; // percent per second (1 = 100%)
-        public static final double MAX_ROTATIONAL_SLEW_RATE_RPS = 2.0; // percent per second (1 = 100%)
+        public static final double MAX_ROTATIONAL_SLEW_RATE_RPS = 3.5; // percent per second (1 = 100%)
 
     }
     public static final class ModuleConstants {
