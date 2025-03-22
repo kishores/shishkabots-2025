@@ -108,7 +108,7 @@ public class DriveSubsystem extends SubsystemBase {
                 (speeds, feedforwards) -> drive(speeds), // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds. Also optionally outputs individual module feedforwards
                 new PPHolonomicDriveController( // PPHolonomicController is the built in path following controller for holonomic drive trains
                         new PIDConstants(5, 0.0, 0.0), // Translation PID constants
-                        new PIDConstants(3.0, 0.0, 0.0) // Rotation PID constants
+                        new PIDConstants(1.0, 0.0, 0.0) // Rotation PID constants
                 ),
                 DriveConstants.pathPlannerConfig, // The robot configuration
                 () -> {
@@ -155,7 +155,7 @@ public class DriveSubsystem extends SubsystemBase {
         ySpeed = ySpeed * DriveConstants.MAX_SPEED_IN_MPS;
         rot = rot * DriveConstants.MAX_ANGULAR_SPEED_IN_RPS;
 
-        if (!RobotState.isAutonomous()) {
+        /*if (!RobotState.isAutonomous()) {
             // Apply slew rate limiters to smooth out the inputs
             xSpeed = m_xSpeedLimiter.calculate(xSpeed);
             ySpeed = m_ySpeedLimiter.calculate(ySpeed);
@@ -167,7 +167,7 @@ public class DriveSubsystem extends SubsystemBase {
             } else {
                 rot = m_rotLimiter.calculate(rot); // Normal slew rate
             }
-        }
+        } */
 
         ChassisSpeeds speeds = new ChassisSpeeds(xSpeed, ySpeed, rot);
         var swerveModuleStates = kinematics.toSwerveModuleStates(speeds);
@@ -336,53 +336,6 @@ public class DriveSubsystem extends SubsystemBase {
 
         return AutoBuilder.pathfindToPose(endPose, constraints, 0.0);
     }
-   /*  private PathPlannerPath createPathToEndPose(Pose2d endPose) {
-        List<Waypoint> waypoints = PathPlannerPath.waypointsFromPoses(
-            getPose(),
-            endPose
-        );
-        PathConstraints constraints = new PathConstraints(3.0, 3.0, 2 * Math.PI, 4 * Math.PI);
-        PathPlannerPath path = new PathPlannerPath(
-            waypoints, 
-            constraints, 
-            null, 
-            new GoalEndState(0, endPose.getRotation())
-        );
-        path.preventFlipping = true;
-        return path;
-    }
-
-    public Command driveToEndPose(Pose2d endPose) {
-        try {
-            PathPlannerPath path = createPathToEndPose(endPose);
-            return new FollowPathCommand(
-                path,
-                this::getPose, // Robot pose supplier
-                this::getCurrentSpeeds, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
-                (speeds, feedforwards) -> drive(speeds), // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds. Also optionally outputs individual module feedforwards
-                new PPHolonomicDriveController( // PPHolonomicController is the built in path following controller for holonomic drive trains
-                        new PIDConstants(4.0, 0.0, 0.0), // Translation PID constants
-                        new PIDConstants(3.0, 0.0, 0.0) // Rotation PID constants
-                ),
-                DriveConstants.pathPlannerConfig, // The robot configuration
-                () -> {
-                  // Boolean supplier that controls when the path will be mirrored for the red alliance
-                  // This will flip the path being followed to the red side of the field.
-                  // THE ORIGIN WILL REMAIN ON THE BLUE SIDE
-
-                  var alliance = DriverStation.getAlliance();
-                  if (alliance.isPresent()) {
-                    return alliance.get() == DriverStation.Alliance.Red;
-                  }
-                  return false;
-                },
-                this // Reference to this subsystem to set requirements
-            );
-        } catch (Exception e) {
-            DriverStation.reportError("Big oops: " + e.getMessage(), e.getStackTrace());
-            return Commands.none();
-        }
-    } */
     
     @Override
     public void simulationPeriodic() {
