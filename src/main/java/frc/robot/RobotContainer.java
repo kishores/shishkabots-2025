@@ -8,7 +8,6 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import frc.robot.commands.DefaultDriveCommand;
 import frc.robot.commands.ElevatorTestCommand;
@@ -21,6 +20,7 @@ import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.XboxController;
 
 public class RobotContainer {
@@ -43,8 +43,8 @@ public class RobotContainer {
   // Primary controller (port 0) is for the main driver
   // Secondary controller (port 1) is for the operator/co-pilot
   // Both controllers have the same button mappings for redundancy
-  private final XboxController xboxController = new XboxController(0); // Primary controller on port 0
-  private final XboxController secondaryXboxController = new XboxController(1); // Secondary controller on port 1
+  private final XboxController driveController = new XboxController(0); // Primary controller on port 0
+  private final XboxController mechanismController = new XboxController(1); // Secondary controller on port 1
 
   private static final double DEADBAND = 0.095;
   private static final double SHOOTER_DEADBAND = 0.06;
@@ -68,34 +68,25 @@ public class RobotContainer {
 
   private double getForwardInput() {
     // Use primary controller input, but if it's not moving, check secondary
-    double primaryInput = -xboxController.getLeftY();
-    if (Math.abs(primaryInput) < DEADBAND) {
-      return applyDeadband(-xboxController.getLeftY());
-    }
+    double primaryInput = -driveController.getLeftY();
     return applyDeadband(primaryInput);
   }
 
   private double getStrafeInput() {
     // Use primary controller input, but if it's not moving, check secondary
-    double primaryInput = -xboxController.getLeftX();
-    if (Math.abs(primaryInput) < DEADBAND) {
-      return applyDeadband(-xboxController.getLeftX());
-    }
+    double primaryInput = -driveController.getLeftX();
     return applyDeadband(primaryInput);
   }
 
   private double getRotationInput() {
     // Use primary controller input, but if it's not moving, check secondary
-    double primaryInput = -xboxController.getRightX();
-    if (Math.abs(primaryInput) < DEADBAND) {
-      return applyDeadband(-xboxController.getRightX());
-    }
+    double primaryInput = -driveController.getRightX();
     return applyDeadband(primaryInput);
   }
 
   // getShooterInput only works with the secondary controller. PORT 1
   private double getShooterInput() {
-    double shooterInputSupplier = -secondaryXboxController.getRightY();
+    double shooterInputSupplier = -mechanismController.getRightY();
     if (Math.abs(shooterInputSupplier) < SHOOTER_DEADBAND) {
       return 0;
     }
@@ -119,7 +110,7 @@ public class RobotContainer {
         () -> getShooterInput()
         )
       );
-    autoChooser = AutoBuilder.buildAutoChooser("g");
+    autoChooser = AutoBuilder.buildAutoChooser("straight");
 
       // Register Named Commands for Auton Routines
     NamedCommands.registerCommand("shootBottomLevel", new ShootCommand(shooterSubsystem, elevatorSubsystem));
@@ -130,96 +121,49 @@ public class RobotContainer {
     // Both controllers have identical bindings for redundancy and flexibility
     // This allows either the driver or operator to control any function if needed
     
-    // Primary Xbox Controller Bindings
-    new JoystickButton(xboxController, XboxController.Button.kA.value)
-        .onTrue(new ElevatorTestCommand(elevatorSubsystem, 1));
-    new JoystickButton(xboxController, XboxController.Button.kB.value)
-        .onTrue(new ElevatorTestCommand(elevatorSubsystem, 2));
-    new JoystickButton(xboxController, XboxController.Button.kY.value)
-        .onTrue(new ElevatorTestCommand(elevatorSubsystem, 3));
-    // Use Left Bumper for level 0 (more reliable than POV button)
-    new JoystickButton(xboxController, XboxController.Button.kX.value)
-        .onTrue(new ElevatorTestCommand(elevatorSubsystem, 0));
-    /*new JoystickButton(xboxController, XboxController.Button.kX.value)
-        .whileTrue(new LimelightDebugCommand(limelightSubsystem));*/
-    new JoystickButton(xboxController, XboxController.Button.kLeftBumper.value)
-        .onTrue(
-            new PrepareShooterCommand(shooterSubsystem)
-        );
+    // Primary Xbox Controller Bindings (port 0)
 
-    // Add binding for elevator calibration (Back/Select button)
-    new JoystickButton(xboxController, XboxController.Button.kBack.value)
-        .onTrue(new CalibrateElevatorCommand(elevatorSubsystem));
-        
     // Emergency stop for all subsystems (Back + Start buttons together)
-    new JoystickButton(xboxController, XboxController.Button.kBack.value)
-        .and(new JoystickButton(xboxController, XboxController.Button.kStart.value))
+    new JoystickButton(driveController, XboxController.Button.kBack.value)
+        .and(new JoystickButton(driveController, XboxController.Button.kStart.value))
         .onTrue(new EmergencyStopCommand(driveSubsystem, elevatorSubsystem, shooterSubsystem));
 
-    // Emergency stop for elevator (Start button)
-    new JoystickButton(xboxController, XboxController.Button.kStart.value)
-        .onTrue(Commands.runOnce(() -> elevatorSubsystem.stop()));
-        
-    // Shooter control - Right Bumper
-    new JoystickButton(xboxController, XboxController.Button.kRightBumper.value)
-        .onTrue(new ShootCommand(shooterSubsystem, elevatorSubsystem));
-        
-    // Secondary Xbox Controller Bindings (same as primary)
-    new JoystickButton(secondaryXboxController, XboxController.Button.kA.value)
-        .onTrue(new ElevatorTestCommand(elevatorSubsystem, 1));
-    new JoystickButton(secondaryXboxController, XboxController.Button.kB.value)
-        .onTrue(new ElevatorTestCommand(elevatorSubsystem, 2));
-    new JoystickButton(secondaryXboxController, XboxController.Button.kY.value)
-        .onTrue(new ElevatorTestCommand(elevatorSubsystem, 3));
-    new JoystickButton(secondaryXboxController, XboxController.Button.kX.value)
-        .onTrue(new ElevatorTestCommand(elevatorSubsystem, 0));
-    
-    new JoystickButton(secondaryXboxController, XboxController.Button.kBack.value)
-        .onTrue(new CalibrateElevatorCommand(elevatorSubsystem));
-    
-    new JoystickButton(secondaryXboxController, XboxController.Button.kLeftBumper.value)
-        .onTrue(
-            new PrepareShooterCommand(shooterSubsystem));
-    
-    new JoystickButton(secondaryXboxController, XboxController.Button.kRightBumper.value)
-        .onTrue(new ShootCommand(shooterSubsystem, elevatorSubsystem));
-    
-    new JoystickButton(secondaryXboxController, XboxController.Button.kStart.value)
-        .onTrue(Commands.runOnce(() -> elevatorSubsystem.stop()));
-
-    // Emergency stop for all subsystems (Back + Start buttons together) on secondary controller
-    new JoystickButton(secondaryXboxController, XboxController.Button.kBack.value)
-        .and(new JoystickButton(secondaryXboxController, XboxController.Button.kStart.value))
-        .onTrue(new EmergencyStopCommand(driveSubsystem, elevatorSubsystem, shooterSubsystem));
-
-    // Slow driving mode for primary controller
-    new JoystickButton(xboxController, XboxController.Button.kRightStick.value)
-        .whileTrue(
-            new DefaultDriveCommand(
-                driveSubsystem,
-                () -> getForwardInput() * 0.325,
-                () -> getStrafeInput() * 0.325,
-                () -> getRotationInput() * 0.325
-            )
-        );
-        
-
-  }
-
-  private void configureDefaultCommands() {
-    driveSubsystem.setDefaultCommand(
+      // Slow driving mode for primary controller
+    new JoystickButton(driveController, XboxController.Button.kRightBumper.value) 
+    .whileTrue(
         new DefaultDriveCommand(
             driveSubsystem,
-            () -> getForwardInput() * 0.5,  // Forward/backward
-            () -> getStrafeInput() * 0.5,   // Left/right
-            () -> getRotationInput() * 0.5  // Rotation
+            () -> getForwardInput() * 0.45,
+            () -> getStrafeInput() * 0.45,
+            () -> getRotationInput() * 0.45
         )
     );
-    
-    // Commented out as Limelight is no longer used
-    // limelightSubsystem.setDefaultCommand(new LimelightDebugCommand(limelightSubsystem));
-  }
 
+    // Secondary Xbox Controller Bindings (same as primary)
+    new JoystickButton(mechanismController, XboxController.Button.kX.value)
+        .onTrue(new ElevatorTestCommand(elevatorSubsystem, 0));
+    new JoystickButton(mechanismController, XboxController.Button.kA.value)
+        .onTrue(new ElevatorTestCommand(elevatorSubsystem, 1));
+    new JoystickButton(mechanismController, XboxController.Button.kB.value)
+        .onTrue(new ElevatorTestCommand(elevatorSubsystem, 2));
+    new JoystickButton(mechanismController, XboxController.Button.kY.value)
+        .onTrue(new ElevatorTestCommand(elevatorSubsystem, 3));
+    
+    new JoystickButton(mechanismController, XboxController.Button.kBack.value)
+        .onTrue(new CalibrateElevatorCommand(elevatorSubsystem));
+    
+    new JoystickButton(mechanismController, XboxController.Button.kLeftBumper.value)
+        .onTrue(new PrepareShooterCommand(shooterSubsystem));
+    
+    new JoystickButton(mechanismController, XboxController.Button.kRightBumper.value)
+        .onTrue(new ShootCommand(shooterSubsystem, elevatorSubsystem));
+
+    // Emergency stop for all subsystems (Back + Start buttons together) on secondary controller
+    new JoystickButton(mechanismController, XboxController.Button.kBack.value)
+        .and(new JoystickButton(mechanismController, XboxController.Button.kStart.value))
+        .onTrue(new EmergencyStopCommand(driveSubsystem, elevatorSubsystem, shooterSubsystem));
+  }
+        
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
    *

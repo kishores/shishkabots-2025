@@ -48,8 +48,7 @@ public class ShootCommand extends SequentialCommandGroup {
                 shooter.shootBottomLevelCoral();
             } else if (elevator.getCurrentLevel() == 3) {
                 shooter.shootHighestLevelCoral();
-            }
-            shooter.shootCoral();
+            } else shooter.shootCoral();
         }
 
         @Override
