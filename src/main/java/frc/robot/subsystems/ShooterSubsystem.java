@@ -166,8 +166,8 @@ public class ShooterSubsystem extends SubsystemBase {
     public void shootBottomLevelCoral() {
         if (currentState == ShooterState.CORAL_INSIDE) {
             Logger.log("Shooting coral to bottom level");
-            leftMotor.set(0);
-            rightMotor.set(SHOOTING_POWER + 0.3);
+            leftMotor.set(SHOOTING_POWER - 0.2);
+            rightMotor.set(SHOOTING_POWER + 0.2);
             stateTimer.reset();
             stateTimer.start();
         } else {
